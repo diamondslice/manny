@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Playbook — P+M</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper:      #f7f4ef;
+    --paper2:     #f0ece4;
+    --paper3:     #e8e2d8;
+    --ink:        #1c1812;
+    --ink-mid:    #4a4238;
+    --ink-dim:    #8a7f72;
+    --ink-faint:  #b8b0a4;
+    --clay:       #b85c38;
+    --clay-light: #d4794e;
+    --clay-pale:  #f2e8e2;
+    --clay-border:#e0c4b8;
+    --sage:       #5a7a58;
+    --sage-pale:  #e8f0e6;
+    --sage-border:#c0d4be;
+    --border:     #d8d0c4;
+    --border-mid: #c8bfb2;
+    --serif:      'Libre Baskerville', Georgia, serif;
+    --sans:       'DM Sans', system-ui, sans-serif;
+    --r:          4px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* subtle paper texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9000;
+    opacity: 0.6;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    background: var(--paper);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header-inner {
+    padding: 18px 18px 0;
+    max-width: 460px;
+    margin: 0 auto;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .logo {
+    font-family: var(--serif);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+
+  .logo em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--clay);
+  }
+
+  .logo-sub {
+    font-family: var(--sans);
+    font-size: 10px;
+    font-weight: 300;
+    color: var(--ink-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--clay);
+    animation: blink 3s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+  }
+
+  /* ── NAV ── */
+  .nav {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: 0;
+    margin: 0 -18px;
+    padding: 0 14px;
+  }
+
+  .nav::-webkit-scrollbar { display: none; }
+
+  .nav-btn {
+    flex-shrink: 0;
+    padding: 9px 10px 10px;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--ink-dim);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color 0.16s, border-color 0.16s;
+    white-space: nowrap;
+  }
+
+  .nav-btn:hover { color: var(--ink-mid); }
+  .nav-btn.active { color: var(--clay); border-bottom-color: var(--clay); font-weight: 500; }
+
+  /* ── MAIN ── */
+  .main {
+    padding: 20px 16px 48px;
+    max-width: 460px;
+    margin: 0 auto;
+  }
+
+  .section { display: none; }
+  .section.active { display: block; animation: rise 0.2s ease; }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SECTION TITLE ── */
+  .st {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-dim);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 0.01em;
+  }
+
+  .st::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--border), transparent);
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0;
+  }
+
+  .arr {
+    font-size: 9px;
+    color: var(--ink-faint);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .card.open > .card-header .arr,
+  .snack-card.open .snack-h .arr,
+  .day-card.open .day-h .arr { transform: rotate(90deg); }
+
+  /* ── GENERIC CARD ── */
+  .card {
+    background: white;
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    border-radius: var(--r);
+    overflow: hidden;
+    transition: border-color 0.14s, box-shadow 0.14s;
+  }
+
+  .card:hover { border-color: var(--border-mid); box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
+  .card.open { border-color: var(--clay-border); }
+
+  .card-header {
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .card-title {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+
+  .card-meta {
+    font-size: 10px;
+    color: var(--ink-faint);
+    margin-top: 2px;
+    font-weight: 300;
+  }
+
+  .card-body {
+    display: none;
+    padding: 0 14px 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .card.open .card-body { display: block; animation: rise 0.15s ease; }
+
+  /* ── RECIPE ELEMENTS ── */
+  .rl {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 13px 0 7px;
+  }
+
+  .il { list-style: none; }
+  .il li {
+    font-size: 12px;
+    color: var(--ink-mid);
+    padding: 4px 0;
+    border-bottom: 1px solid var(--paper2);
+    display: flex;
+    gap: 10px;
+    line-height: 1.4;
+  }
+  .il li::before { content: '—'; color: var(--ink-faint); flex-shrink: 0; }
+  .il li:last-child { border-bottom: none; }
+
+  .sl { list-style: none; counter-reset: s; }
+  .sl li {
+    font-size: 12px;
+    color: var(--ink-mid);
+    padding: 5px 0 5px 24px;
+    position: relative;
+    line-height: 1.55;
+    border-bottom: 1px solid var(--paper2);
+    counter-increment: s;
+  }
+  .sl li::before {
+    content: counter(s);
+    position: absolute;
+    left: 0;
+    top: 6px;
+    background: var(--paper2);
+    color: var(--clay);
+    font-size: 8px;
+    font-weight: 700;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .sl li:last-child { border-bottom: none; }
+
+  .use-in { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .uc {
+    font-size: 11px;
+    background: var(--paper2);
+    border: 1px solid var(--border);
+    color: var(--ink-mid);
+    padding: 3px 10px;
+    border-radius: 20px;
+    transition: border-color 0.13s;
+  }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; margin: 10px 0; }
+  .tag {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+    color: var(--ink-faint);
+    border-radius: 2px;
+  }
+  .tag.p { border-color: var(--clay-border); color: var(--clay); background: var(--clay-pale); }
+
+  .nb {
+    background: var(--clay-pale);
+    border-left: 3px solid var(--clay-light);
+    padding: 9px 11px;
+    margin-top: 12px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-mid);
+    line-height: 1.55;
+    border-radius: 0 var(--r) var(--r) 0;
+  }
+
+  /* ── FILTER BAR ── */
+  .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+
+  .fb {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 400;
+    padding: 5px 13px;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--ink-mid);
+    cursor: pointer;
+    border-radius: 20px;
+    transition: all 0.14s;
+    line-height: 1;
+  }
+
+  .fb:hover { border-color: var(--clay-light); color: var(--clay); }
+  .fb.active { background: var(--clay); color: white; border-color: var(--clay); font-weight: 500; }
+
+  /* ── PROTEIN GROUP HEADERS ── */
+  .pro-group { margin-bottom: 4px; }
+
+  .pro-group-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 0 9px;
+  }
+
+  .pro-icon { font-size: 15px; line-height: 1; flex-shrink: 0; }
+
+  .pro-label {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 15px;
+    color: var(--ink-mid);
+    letter-spacing: 0.01em;
+  }
+
+  .pro-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--border), transparent);
+  }
+
+  .pro-rows { display: flex; flex-direction: column; gap: 5px; }
+
+  /* ── MEAL ROWS ── */
+  .mr {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 11px 14px;
+    cursor: pointer;
+    border-radius: var(--r);
+    transition: border-color 0.14s, box-shadow 0.14s;
+    position: relative;
+  }
+
+  .mr:hover { border-color: var(--border-mid); box-shadow: 0 1px 5px rgba(0,0,0,0.05); }
+  .mr.open { border-color: var(--clay-border); }
+
+  .mn { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 3px; line-height: 1.3; padding-right: 14px; }
+  .mc { font-size: 10px; color: var(--ink-faint); font-weight: 300; letter-spacing: 0.02em; }
+
+  .mnote {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--ink-dim);
+    margin-top: 7px;
+    display: none;
+    line-height: 1.55;
+    border-top: 1px solid var(--paper2);
+    padding-top: 6px;
+  }
+
+  .mr.open .mnote { display: block; }
+
+  /* ── TEMPLATE BOX ── */
+  .tb {
+    background: var(--paper2);
+    border: 1px solid var(--border);
+    padding: 12px 15px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: var(--ink-mid);
+    line-height: 1.75;
+    border-radius: var(--r);
+    font-weight: 300;
+  }
+
+  .tb strong { color: var(--ink); font-weight: 500; }
+
+  /* ── RULES ── */
+  .rr { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--paper2); align-items: flex-start; }
+  .rr:last-of-type { border-bottom: none; }
+  .rb { color: var(--clay); font-size: 10px; flex-shrink: 0; margin-top: 3px; }
+  .rt { font-size: 12px; color: var(--ink-mid); line-height: 1.6; font-weight: 300; }
+
+  /* ── SHOPPING ── */
+  .sc { margin-bottom: 18px; }
+  .sct {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-mid);
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .si { display: flex; justify-content: space-between; align-items: baseline; padding: 6px 0; border-bottom: 1px solid var(--paper2); font-size: 12px; }
+  .si:last-child { border-bottom: none; }
+  .sin { color: var(--ink-mid); font-weight: 300; }
+  .siq { color: var(--clay); font-size: 11px; font-weight: 500; }
+
+  /* ── SNACKS ── */
+  .snack-card {
+    background: white;
+    border: 1px solid var(--border);
+    margin-bottom: 6px;
+    border-radius: var(--r);
+    overflow: hidden;
+    transition: border-color 0.14s, box-shadow 0.14s;
+  }
+
+  .snack-card:hover { border-color: var(--border-mid); box-shadow: 0 1px 5px rgba(0,0,0,0.05); }
+  .snack-card.open { border-color: var(--clay-border); }
+
+  .snack-h {
+    padding: 10px 13px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .snack-em { font-size: 16px; flex-shrink: 0; line-height: 1; }
+  .snack-name { font-size: 12px; font-weight: 400; color: var(--ink); flex: 1; line-height: 1.35; }
+
+  .badge {
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border: 1px solid;
+    border-radius: 2px;
+    flex-shrink: 0;
+    line-height: 1.4;
+  }
+
+  .badge.hp { color: var(--clay); border-color: var(--clay-border); background: var(--clay-pale); }
+  .badge.hf { color: var(--sage); border-color: var(--sage-border); background: var(--sage-pale); }
+  .badge.ft { color: var(--ink-faint); border-color: var(--border); background: var(--paper2); }
+
+  .snack-body { display: none; padding: 0 13px 11px; border-top: 1px solid var(--paper2); }
+  .snack-card.open .snack-body { display: block; animation: rise 0.14s ease; }
+
+  .sing { font-size: 11px; font-weight: 300; color: var(--ink-mid); padding: 2px 0; display: flex; gap: 8px; line-height: 1.45; }
+  .sing::before { content: '·'; color: var(--ink-faint); flex-shrink: 0; }
+
+  .stip {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--clay);
+    margin-top: 7px;
+    padding-top: 6px;
+    border-top: 1px solid var(--paper2);
+  }
+
+  .ak {
+    background: var(--paper2);
+    border: 1px solid var(--border);
+    padding: 14px 15px;
+    border-radius: var(--r);
+  }
+
+  .aks { margin-bottom: 11px; }
+  .aks:last-child { margin-bottom: 0; }
+  .aksn {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 6px;
+  }
+  .akchips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .akchip {
+    font-size: 11px;
+    font-weight: 300;
+    background: white;
+    border: 1px solid var(--border);
+    color: var(--ink-mid);
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  /* ── SMOOTHIES ── */
+  .smcard {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 14px 15px;
+    margin-bottom: 8px;
+    border-radius: var(--r);
+    transition: box-shadow 0.14s;
+  }
+
+  .smcard:hover { box-shadow: 0 1px 6px rgba(0,0,0,0.06); }
+
+  .smname {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 9px;
+    line-height: 1.2;
+  }
+
+  .smlist { list-style: none; font-size: 11px; font-weight: 300; color: var(--ink-mid); line-height: 1.95; }
+  .smlist li { display: flex; gap: 8px; }
+  .smlist li::before { content: '—'; color: var(--ink-faint); flex-shrink: 0; }
+
+  /* ── WEEK ── */
+  .day-card {
+    background: white;
+    border: 1px solid var(--border);
+    margin-bottom: 7px;
+    border-radius: var(--r);
+    overflow: hidden;
+    transition: border-color 0.14s, box-shadow 0.14s;
+  }
+
+  .day-card:hover { border-color: var(--border-mid); box-shadow: 0 1px 5px rgba(0,0,0,0.05); }
+  .day-card.open { border-color: var(--clay-border); }
+
+  .day-h {
+    padding: 11px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+
+  .day-n {
+    font-family: var(--serif);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .day-b { display: none; padding: 2px 14px 12px; border-top: 1px solid var(--paper2); }
+  .day-card.open .day-b { display: block; }
+
+  .dm {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--ink-mid);
+    padding: 5px 0;
+    border-bottom: 1px solid var(--paper2);
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    line-height: 1.3;
+  }
+
+  .dm:last-child { border-bottom: none; }
+  .dm::before { content: '·'; color: var(--clay); font-size: 14px; flex-shrink: 0; line-height: 1; }
+
+  /* ── MISC ── */
+  .dim { color: var(--ink-dim); font-size: 11px; font-weight: 300; line-height: 1.7; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="header-top">
+      <div class="logo">Play<em>book</em></div>
+      <div class="logo-sub"><span class="dot"></span>Peter &amp; Martha</div>
+    </div>
+    <nav class="nav">
+      <button class="nav-btn active" onclick="showSection('meals',this)">Meals</button>
+      <button class="nav-btn" onclick="showSection('nocook',this)">No-Cook</button>
+      <button class="nav-btn" onclick="showSection('proteins',this)">Proteins</button>
+      <button class="nav-btn" onclick="showSection('carbs',this)">Carbs</button>
+      <button class="nav-btn" onclick="showSection('sauces',this)">Sauces</button>
+      <button class="nav-btn" onclick="showSection('snacks',this)">Snacks</button>
+      <button class="nav-btn" onclick="showSection('smoothies',this)">Smoothies</button>
+      <button class="nav-btn" onclick="showSection('pantry',this)">Pantry</button>
+      <button class="nav-btn" onclick="showSection('supps',this)">Supps</button>
+    </nav>
+  </div>
+</header>
+
+<div class="main">
+
+<!-- ═══════ MEALS ═══════ -->
+<div class="section active" id="section-meals">
+
+  <div class="st">Quick Decide</div>
+
+  <div class="tb">
+    <strong>Template —</strong> 1 protein + 1 carb + 1 veg or bean + 1 sauce + optional crunch or acid
+  </div>
+
+  <div class="filter-bar" id="filter-protein">
+    <button class="fb active" onclick="filterMeals('all','protein',this)">All</button>
+    <button class="fb" onclick="filterMeals('chicken','protein',this)">Chicken</button>
+    <button class="fb" onclick="filterMeals('rotisserie','protein',this)">🍗 Rotisserie</button>
+    <button class="fb" onclick="filterMeals('beef','protein',this)">Beef</button>
+    <button class="fb" onclick="filterMeals('salmon','protein',this)">Salmon</button>
+    <button class="fb" onclick="filterMeals('shrimp','protein',this)">Shrimp</button>
+    <button class="fb" onclick="filterMeals('eggs','protein',this)">Eggs</button>
+    <button class="fb" onclick="filterMeals('yogurt','protein',this)">Yogurt</button>
+  </div>
+
+  <div class="filter-bar" id="filter-cuisine" style="margin-top:-8px">
+    <button class="fb active" onclick="filterMeals('all','cuisine',this)">🌐 All</button>
+    <button class="fb" onclick="filterMeals('mex','cuisine',this)">🇲🇽</button>
+    <button class="fb" onclick="filterMeals('jp','cuisine',this)">🇯🇵</button>
+    <button class="fb" onclick="filterMeals('kr','cuisine',this)">🇰🇷</button>
+    <button class="fb" onclick="filterMeals('in','cuisine',this)">🇮🇳</button>
+    <button class="fb" onclick="filterMeals('me','cuisine',this)">ME</button>
+    <button class="fb" onclick="filterMeals('it','cuisine',this)">🇮🇹</button>
+    <button class="fb" onclick="filterMeals('us','cuisine',this)">🇺🇸</button>
+  </div>
+
+  <div id="meal-grid"></div>
+</div>
+
+<!-- ═══════ NO-COOK ═══════ -->
+<div class="section" id="section-nocook">
+  <div class="st">No-Cook / Minimal-Cook Meals</div>
+  <p class="dim" style="margin-bottom:14px">These are friction killers. Not every meal needs to be meal-prepped, macro-perfect, or chef-level. Sometimes a turkey melt + fruit is exactly the right move.</p>
+
+  <div class="divider"></div>
+  <div class="st">Rotisserie Chicken System</div>
+  <p class="dim" style="margin-bottom:12px">One bird from Costco (~$5) = 6-8 servings, zero cooking, already seasoned. Buy it on the way home. The carcass makes soup. Nothing goes to waste.</p>
+
+  <div class="card" id="nc-rot-bowl"><div class="card-header" onclick="tc('nc-rot-bowl')"><div><div class="card-title">Rotisserie Rice Bowl</div><div class="card-meta">~4 min · zero cooking</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Shredded rotisserie chicken (cold is fine)</li><li>Rice from fridge, microwaved</li><li>Garlic yogurt sauce</li><li>Cucumber slices</li><li>Hot sauce or chili crisp</li></ul><p style="font-size:11px;color:var(--ink-dim);margin-top:8px;font-weight:300">Strip the chicken while the rice heats. Bowl in under 5 minutes.</p></div>
+  </div>
+
+  <div class="card" id="nc-rot-soup"><div class="card-header" onclick="tc('nc-rot-soup')"><div><div class="card-title">Rotisserie Chicken Soup</div><div class="card-meta">~20 min · uses the carcass</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Rotisserie carcass (after stripping the meat)</li><li>Water</li><li>1 bone broth powder packet</li><li>Frozen vegetables</li><li>Rice or noodles</li><li>Shredded leftover meat</li></ul><div class="nb">Simmer the carcass in water + broth packet for 20 min. Strain. Add frozen veg and rice, cook 5 more min. Stir in leftover chicken. This is one of the highest-satiety meals in the whole system and it costs almost nothing.</div></div>
+  </div>
+
+  <div class="card" id="nc-rot-quesadilla"><div class="card-header" onclick="tc('nc-rot-quesadilla')"><div><div class="card-title">Rotisserie Quesadilla</div><div class="card-meta">~5 min · one pan</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Shredded rotisserie chicken</li><li>Cheese blend (fat-free + 2% shredded)</li><li>Tortilla</li><li>Salsa + yogurt crema for dipping</li></ul><p style="font-size:11px;color:var(--ink-dim);margin-top:8px;font-weight:300">Fill, fold, press in a dry pan 2 min per side until crisp. Cut into wedges. Done.</p></div>
+  </div>
+
+  <div class="card" id="nc-rot-loaded"><div class="card-header" onclick="tc('nc-rot-loaded')"><div><div class="card-title">Rotisserie Loaded Potato</div><div class="card-meta">~5 min · if potato is prepped</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Baked potato from the fridge (microwaved hot)</li><li>Shredded rotisserie chicken — cold is fine</li><li>Garlic yogurt</li><li>Scallions or chili flake</li></ul><div class="nb">The contrast of hot potato + cold shredded chicken + cool yogurt sauce actually works extremely well. No reheating the chicken needed.</div></div>
+  </div>
+
+  <div class="card" id="nc-rot-tikka"><div class="card-header" onclick="tc('nc-rot-tikka')"><div><div class="card-title">Quick Tikka Chicken Bowl</div><div class="card-meta">~5 min · sauce from pantry</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Shredded rotisserie chicken</li><li>Yogurt + garam masala + garlic powder + pinch of chili — mix and toss with cold chicken</li><li>Rice (reheated)</li><li>Frozen peas (microwaved)</li></ul><div class="nb">Cold rotisserie tossed in spiced yogurt is nearly indistinguishable from properly tikka-marinated chicken in a bowl context. Use this when you want Indian flavors in under 5 minutes.</div></div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="st">Sourdough System</div>
+  <p class="dim" style="margin-bottom:12px">Better satiety than standard bread, easier digestion, makes assembled meals feel real. Keep a loaf on hand as a base for fast protein plates.</p>
+
+  <div class="card" id="nc-toast"><div class="card-header" onclick="tc('nc-toast')"><div><div class="card-title">Protein Breakfast Toast</div><div class="card-meta">~5 min · eggs + turkey + cheese</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Sourdough toasted</li><li>Eggs or egg whites, scrambled or fried</li><li>Turkey slices</li><li>Lowfat cheese slice</li><li>Hot sauce</li></ul></div>
+  </div>
+
+  <div class="card" id="nc-tunamelt"><div class="card-header" onclick="tc('nc-tunamelt')"><div><div class="card-title">Tuna Melt</div><div class="card-meta">~5 min · air fry or pan toast</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Canned tuna</li><li>Greek yogurt or light mayo</li><li>Lowfat cheese slice</li><li>Sourdough</li></ul><div class="nb">Air fry at 375°F for 3-4 min or press in a pan. Serve with tomato soup made from a bone broth packet + crushed tomatoes.</div></div>
+  </div>
+
+  <div class="card" id="nc-beefmelt"><div class="card-header" onclick="tc('nc-beefmelt')"><div><div class="card-title">Shredded Beef Melt</div><div class="card-meta">~5 min · uses fridge beef</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Shredded beef from fridge</li><li>Spoonful of ragu or salsa</li><li>Cheese blend</li><li>Sourdough</li></ul><div class="nb">Open-face under the broiler 2-3 min, or press closed in a skillet. One of the best leftover-beef moves.</div></div>
+  </div>
+
+  <div class="card" id="nc-turkeycrunch"><div class="card-header" onclick="tc('nc-turkeycrunch')"><div><div class="card-title">Turkey Crunch Sandwich</div><div class="card-meta">~3 min · zero cooking</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Turkey lunch meat</li><li>Cucumber slices</li><li>Dijon mustard</li><li>Lettuce</li><li>Lowfat cheese slice</li><li>Sourdough</li></ul></div>
+  </div>
+
+  <div class="card" id="nc-pizzatoast"><div class="card-header" onclick="tc('nc-pizzatoast')"><div><div class="card-title">Open-Face Pizza Toast</div><div class="card-meta">~5 min · broil or air fry</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Sourdough</li><li>Tomato sauce or tomato paste</li><li>Cheese blend (fat-free + 2%)</li><li>Turkey pepperoni or diced chicken</li><li>Oregano + chili flake</li></ul></div>
+  </div>
+
+  <div class="card" id="nc-salmontoast"><div class="card-header" onclick="tc('nc-salmontoast')"><div><div class="card-title">Salmon Toast</div><div class="card-meta">~2 min · if salmon mix is prepped</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Sourdough toasted</li><li>Salmon mix from fridge</li><li>Cucumber slices</li><li>Lemon squeeze</li><li>Chili flakes</li></ul></div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="st">Turkey Lunch Meat System</div>
+  <p class="dim" style="margin-bottom:12px">Zero-prep protein. The best insurance against bad ordering decisions. Keep a pack in the fridge at all times.</p>
+
+  <div class="card" id="nc-rollups"><div class="card-header" onclick="tc('nc-rollups')"><div><div class="card-title">Turkey Roll-Ups</div><div class="card-meta">~2 min · zero cooking</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Turkey slices</li><li>Lowfat cheese slice</li><li>Pickle spear or cucumber</li></ul><p style="font-size:11px;color:var(--ink-dim);margin-top:8px;font-weight:300">Roll the cheese and pickle inside the turkey. No plate needed.</p></div>
+  </div>
+
+  <div class="card" id="nc-turkeywrap"><div class="card-header" onclick="tc('nc-turkeywrap')"><div><div class="card-title">Turkey Breakfast Wrap</div><div class="card-meta">~5 min</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Eggs scrambled soft</li><li>Turkey slices</li><li>Lowfat cheese</li><li>Salsa</li><li>Tortilla</li></ul></div>
+  </div>
+
+  <div class="card" id="nc-turkeybowl"><div class="card-header" onclick="tc('nc-turkeybowl')"><div><div class="card-title">Chopped Turkey Salad Bowl</div><div class="card-meta">~5 min · no cooking</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Turkey chopped or torn</li><li>Cucumber diced</li><li>Cherry tomatoes halved</li><li>Yogurt + lemon + garlic dressing</li></ul></div>
+  </div>
+
+  <div class="card" id="nc-turkeyrice"><div class="card-header" onclick="tc('nc-turkeyrice')"><div><div class="card-title">Turkey Fried Rice</div><div class="card-meta">~8 min · underrated</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Turkey chopped</li><li>Egg whites</li><li>Day-old rice</li><li>Frozen stir-fry veg</li><li>Soy + garlic powder</li></ul><div class="nb">Works better than you'd expect. Turkey absorbs the soy and garlic well and the texture holds up in the pan.</div></div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="st">Canned Tuna System</div>
+  <p class="dim" style="margin-bottom:12px">Best emergency protein in the pantry. Cheap, no-cook, zero thawing. Especially strong for lunches.</p>
+
+  <div class="card" id="nc-tunacrunch"><div class="card-header" onclick="tc('nc-tunacrunch')"><div><div class="card-title">Tuna Crunch Bowl</div><div class="card-meta">~3 min · no cooking</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Canned tuna (drained)</li><li>Cucumber sliced</li><li>Rice from fridge</li><li>Yogurt-sriracha sauce</li></ul></div>
+  </div>
+
+  <div class="card" id="nc-tunapotato"><div class="card-header" onclick="tc('nc-tunapotato')"><div><div class="card-title">Tuna Potato Bowl</div><div class="card-meta">~3 min · uses prepped potato</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Baked potato from fridge, reheated</li><li>Canned tuna</li><li>Garlic yogurt</li><li>Pickles</li></ul><div class="nb">Very high satiety. Split the potato, fill with tuna and yogurt, done.</div></div>
+  </div>
+
+  <div class="card" id="nc-tunasushi"><div class="card-header" onclick="tc('nc-tunasushi')"><div><div class="card-title">Tuna Sushi-ish Bowl</div><div class="card-meta">~5 min</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Rice from fridge</li><li>Canned tuna</li><li>Cucumber</li><li>Nori strips</li><li>Spicy yogurt-mayo</li></ul></div>
+  </div>
+
+  <div class="card" id="nc-tunawrap"><div class="card-header" onclick="tc('nc-tunawrap')"><div><div class="card-title">Tuna Wrap</div><div class="card-meta">~3 min</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Canned tuna + yogurt or light mayo</li><li>Shredded lettuce</li><li>Pickled onions</li><li>Tortilla</li></ul></div>
+  </div>
+
+  <div class="card" id="nc-tunapasta"><div class="card-header" onclick="tc('nc-tunapasta')"><div><div class="card-title">Tuna Tomato Pasta</div><div class="card-meta">~12 min · Mediterranean</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Canned tuna</li><li>Garlic confit cube or fresh garlic</li><li>Crushed tomatoes</li><li>Chili flake</li><li>Pasta</li></ul><div class="nb">Use the pasta water to loosen the sauce. Tuna goes in at the very end — don't cook it, just warm it.</div></div>
+  </div>
+
+  <div class="card" id="nc-tunabeans"><div class="card-header" onclick="tc('nc-tunabeans')"><div><div class="card-title">Tuna White Bean Salad</div><div class="card-meta">~3 min · great digestion meal</div></div><span class="arr">▶</span></div>
+    <div class="card-body"><ul class="il"><li>Canned tuna</li><li>White beans (canned or prepped)</li><li>Lemon juice</li><li>Fresh or dried herbs</li><li>Olive oil or garlic yogurt</li></ul></div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="st">5-Minute Emergency Meals</div>
+  <div class="tb" style="font-size:11px;line-height:2.3">
+    <strong>Rotisserie rice bowl</strong> · shredded bird + rice + garlic yogurt<br>
+    <strong>Rotisserie quesadilla</strong> · tortilla + chicken + cheese · pan 4 min<br>
+    <strong>Rotisserie loaded potato</strong> · hot potato + cold chicken + yogurt<br>
+    <strong>Turkey sandwich</strong> · sourdough + turkey + mustard + cheese<br>
+    <strong>Tuna bowl</strong> · rice + tuna + cucumber + spicy mayo<br>
+    <strong>Tuna melt</strong> · sourdough + tuna + cheese · air fry 4 min<br>
+    <strong>Yogurt parfait</strong> · yogurt + berries + cereal + chia<br>
+    <strong>Cereal + whey</strong> · Fairlife + high-protein cereal + whey<br>
+    <strong>Turkey wrap</strong> · tortilla + turkey + cheese + salsa<br>
+    <strong>Salmon toast</strong> · sourdough + salmon mix + cucumber
+  </div>
+
+  <div class="divider"></div>
+  <div class="st">Protein Storage Map</div>
+  <div class="tb" style="font-size:11px;line-height:2.3">
+    <strong>Fridge —</strong> turkey · yogurt · salmon mix · eggs · cheese<br>
+    <strong>Freezer —</strong> chicken · shredded beef · shrimp · ground beef<br>
+    <strong>Pantry —</strong> canned tuna · whey · bone broth packets
+  </div>
+</div>
+
+<!-- ═══════ PROTEINS ═══════ -->
+<div class="section" id="section-proteins">
+  <div class="st">Protein Building Blocks</div>
+
+  <div class="card" id="c-chicken"><div class="card-header" onclick="tc('c-chicken')"><div><div class="card-title">Velveted Chicken Breast</div><div class="card-meta">~8 portions · 4 lb · fridge 3-4d · freeze ✓</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <div class="tags"><span class="tag p">Primary Lean</span><span class="tag">Bowls</span><span class="tag">Pasta</span><span class="tag">Wraps</span></div>
+      <div class="rl">Ingredients</div>
+      <ul class="il"><li>4 lb chicken breast, sliced thin against grain</li><li>4 egg whites</li><li>2 tsp baking soda</li><li>4 tsp cornstarch</li><li>2 tsp kosher salt</li><li>1 tsp neutral oil (optional)</li></ul>
+      <div class="rl">Method</div>
+      <ol class="sl"><li>Slice thin, keep uniform</li><li>Mix egg whites, baking soda, cornstarch, salt — toss with chicken</li><li>Rest exactly 15–30 min</li><li>Optional: rinse lightly, pat very dry</li><li>Par-cook in hot pan or blanch — don't fully cook</li><li>Cool fast, portion. Finish cooking in the final dish</li></ol>
+      <div class="rl">Use It In</div>
+      <div class="use-in"><span class="uc">Fried Rice</span><span class="uc">Teriyaki Bowl</span><span class="uc">Enchilada Wrap</span><span class="uc">Garlic Pasta</span><span class="uc">Bean Potato</span></div>
+      <div class="nb">Makes chicken breast feel far less like diet food. Keep lightly seasoned at prep so it fits any cuisine later. <strong>On chaotic weeks: rotisserie chicken is a direct sub for everything on this list.</strong></div>
+    </div>
+  </div>
+
+  <div class="card" id="c-rotisserie"><div class="card-header" onclick="tc('c-rotisserie')"><div><div class="card-title">Rotisserie Chicken</div><div class="card-meta">1 bird = 6-8 portions · fridge 4d · freeze shredded ✓</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <div class="tags"><span class="tag p">Zero-Cook Protein</span><span class="tag">Costco Bird</span><span class="tag">Sub for Velveted</span></div>
+      <div class="rl">How to Break It Down</div>
+      <ol class="sl"><li>Pull breast meat and shred or slice — use anywhere velveted chicken is called for</li><li>Pull thigh meat separately — richer, more forgiving for reheating</li><li>Strip every last bit of meat off the carcass — don't waste it</li><li>Save the carcass in a bag in the freezer for bone broth if you make your own</li><li>Portion shredded meat into fridge containers or freeze flat</li></ol>
+      <div class="rl">Best Uses</div>
+      <ul class="il"><li>Sub directly for velveted chicken in any bowl, wrap, or rice dish</li><li>Shred into soups, fried rice, and pasta — all faster than cooking from scratch</li><li>Cold in wraps and salads — already seasoned, needs nothing</li><li>Quesadillas and burritos — shred, fill, done</li></ul>
+      <div class="rl">Costco Math</div>
+      <ul class="il"><li>One bird runs about $5 and yields ~2 lb of usable meat</li><li>That's ~6-8 meal servings at under $1 per serving</li><li>Zero prep time vs. 30-40 min for velveted chicken batch</li></ul>
+      <div class="nb">The single best friction-killer in the whole system on a chaotic week. Grab one on the way home and you have chicken for 3-4 days without turning on a stove. The skin is higher in fat — strip it if you want to stay leaner, leave it if the day allows.</div>
+    </div>
+  </div><div><div class="card-title">Shredded Beef (Pressure Cooker)</div><div class="card-meta">~8-10 portions · 3-4 lb · fridge 4d · freeze ✓✓</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <div class="tags"><span class="tag p">Workhorse</span><span class="tag">Chuck or Top Round</span></div>
+      <div class="rl">Ingredients</div>
+      <ul class="il"><li>3-4 lb chuck (richer) or top round (leaner)</li><li>1 onion sliced or 2 cups frozen onion</li><li>6 cloves garlic or 2 tsp garlic powder</li><li>1-2 cups bone broth</li><li>2 tsp kosher salt, 1 tsp black pepper</li><li>Optional: tomato paste, cumin, oregano, chili flake</li></ul>
+      <div class="rl">Method</div>
+      <ol class="sl"><li>Season generously. Sear optional but adds depth</li><li>Load cooker with onions, garlic, broth, beef</li><li>Pressure cook until pull-apart tender</li><li>Shred warm, return some liquid to keep moist</li><li>For lower fat: chill and skim hardened fat first</li><li>Freeze half if not used within 4 days</li></ol>
+      <div class="use-in"><span class="uc">Rice Bowls</span><span class="uc">Burritos</span><span class="uc">Loaded Potato</span><span class="uc">Quick Ragu</span><span class="uc">Beef Bean Soup</span></div>
+      <div class="nb">One of the best make-ahead proteins in the system. Chuck = luxurious. Top Round = lean. Both great.</div>
+    </div>
+  </div>
+
+  <div class="card" id="c-ground"><div class="card-header" onclick="tc('c-ground')"><div><div class="card-title">Ground Beef From Frozen</div><div class="card-meta">1 lb = 3-4 servings · cooks straight from frozen</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <div class="tags"><span class="tag p">Insurance Policy</span><span class="tag">90/10 or 93/7</span></div>
+      <div class="rl">Method</div>
+      <ol class="sl"><li>Skillet medium heat. Frozen block, sear one side 2-3 min</li><li>Flip, splash water or broth, start scraping</li><li>Keep breaking apart as outer layers soften</li><li>Season after it starts crumbling — hits all the meat</li><li>Drain lightly if needed</li></ol>
+      <div class="use-in"><span class="uc">Taco Beef</span><span class="uc">Quick Chili</span><span class="uc">Ragu</span><span class="uc">Korean Bowl</span><span class="uc">Stuffed Potato</span></div>
+      <div class="nb">Flat frozen packs = major friction reducer. Your insurance for chaotic nights.</div>
+    </div>
+  </div>
+
+  <div class="card" id="c-salmon"><div class="card-header" onclick="tc('c-salmon')"><div><div class="card-title">Baked Salmon Mix</div><div class="card-meta">~6-8 portions · 2 lb · fridge 2-3d · best fresh</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <ul class="il"><li>2 lb salmon, salt + pepper</li><li>0% Greek yogurt + a little light mayo</li><li>Sriracha, soy sauce</li><li>Rice vinegar or lemon juice</li></ul>
+      <div class="rl">Method</div>
+      <ol class="sl"><li>Bake gently at 275°F until just cooked through</li><li>Cool slightly, flake into large pieces — don't pulverize</li><li>Mix dressing: yogurt + light mayo + sriracha + soy + acid</li><li>Fold gently. Under-dress if sitting overnight</li></ol>
+      <div class="use-in"><span class="uc">Sushi Bowls</span><span class="uc">Wraps</span><span class="uc">Toast</span><span class="uc">Rice Paper Rolls</span></div>
+      <div class="nb">Scratches the sushi itch without the takeout habit. A little mayo makes the texture more forgiving.</div>
+    </div>
+  </div>
+
+  <div class="card" id="c-shrimp"><div class="card-header" onclick="tc('c-shrimp')"><div><div class="card-title">Shrimp (Fast Cook)</div><div class="card-meta">2 lb bag = 6-8 servings · cook from frozen</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <ol class="sl"><li>Thaw under cold running water a few minutes</li><li>Pat dry so it sears instead of steams</li><li>Hot pan, cook just until pink + firm — don't overcook</li><li>Season for the dish direction: soy+garlic, chili+lemon, ginger+broth</li></ol>
+      <div class="use-in"><span class="uc">Fried Rice</span><span class="uc">Garlic Pasta</span><span class="uc">Broth Soup</span><span class="uc">Teriyaki Bowl</span><span class="uc">Tacos</span></div>
+      <div class="nb">Cleanest emergency protein in the system. Cooks in minutes from frozen.</div>
+    </div>
+  </div>
+
+  <div class="card" id="c-eggs"><div class="card-header" onclick="tc('c-eggs')"><div><div class="card-title">Egg + Egg White Base</div><div class="card-meta">6-8 portions · fridge 3d or make fresh</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <ol class="sl"><li>Cook softly, slightly underdone — will reheat later</li><li>Use mostly whites + some whole eggs for flavor + texture</li><li>Fold in frozen peppers, onions, spinach, or potatoes</li><li>Cool fast and portion for burritos</li></ol>
+      <div class="use-in"><span class="uc">Burritos</span><span class="uc">Fried Rice</span><span class="uc">Sandwiches</span><span class="uc">Egg + Potato Bowl</span></div>
+      <div class="nb">Cheese blend: 70-80% fat-free + 20-30% 2% is the move for best protein-to-flavor ratio.</div>
+    </div>
+  </div>
+
+  <div class="card" id="c-beans"><div class="card-header" onclick="tc('c-beans')"><div><div class="card-title">Pressure Cooker Beans</div><div class="card-meta">~8-10 portions · 1 lb dry · fridge 5d · freeze ✓</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <ul class="il"><li>1 lb dry black, pinto, or chickpeas</li><li>Water, kosher salt</li><li>Bay leaf, garlic, or onion (optional)</li></ul>
+      <ol class="sl" style="margin-top:8px"><li>Rinse beans, pressure cook until tender</li><li>Salt toward end if playing safe on tenderness</li><li>Cool in their liquid for better texture</li><li>Portion with some liquid so they don't dry out</li></ol>
+      <div class="nb">Beans solve the digestion issue better than stacking more dairy protein. Include daily.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ CARBS ═══════ -->
+<div class="section" id="section-carbs">
+  <div class="st">Carb Bases &amp; Prep</div>
+  <p class="dim" style="margin-bottom:16px">Carbs are not the enemy. Good ones make the plan more satisfying. Prep them intelligently and pair with enough protein and volume.</p>
+
+  <div class="card" id="c-rice"><div class="card-header" onclick="tc('c-rice')"><div><div class="card-title">Rice — Batch Cooked</div><div class="card-meta">8-12 cups cooked · fridge 4d · freeze ✓</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <div class="rl">Ingredients</div>
+      <ul class="il"><li>Jasmine or white rice</li><li>Water</li><li>Salt</li></ul>
+      <div class="rl">Method</div>
+      <ol class="sl"><li>Cook a big batch at the start of the week</li><li>Cool on sheet pans or shallow containers — don't let it steam into mush</li><li>Portion part into fridge for bowls, part into freezer for emergencies</li><li>For fried rice: day-old or fully cooled rice is essential</li></ol>
+      <div class="rl">Use It In</div>
+      <div class="use-in"><span class="uc">Any Bowl</span><span class="uc">Fried Rice</span><span class="uc">Sushi-Style Plates</span><span class="uc">Soup</span><span class="uc">Side Carb</span></div>
+      <div class="nb">Don't mix in cauliflower rice unless you genuinely like it. Don't ruin your meal just to chase volume.</div>
+    </div>
+  </div>
+
+  <div class="card" id="c-potato"><div class="card-header" onclick="tc('c-potato')"><div><div class="card-title">Air-Fried Potatoes &amp; Fries</div><div class="card-meta">4-6 servings · best fresh · par-cooked holds well</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <div class="rl">Ingredients</div>
+      <ul class="il"><li>Russet or Yukon Gold potatoes</li><li>Oil spray</li><li>Salt, pepper, garlic powder, smoked paprika</li></ul>
+      <div class="rl">Method</div>
+      <ol class="sl"><li>Cut to the shape you want — wedges, fries, or cubes</li><li>Rinse and dry very well — this is what makes them crisp</li><li>Air fry until tender and starting to crisp</li><li>Spray lightly with oil, season, return to finish until deeply crisp</li><li>For loaded potato meals: bake whole potatoes in bulk and reheat as needed</li></ol>
+      <div class="rl">Use It In</div>
+      <div class="use-in"><span class="uc">Steak Frites</span><span class="uc">Breakfast Potatoes</span><span class="uc">Loaded Taco Beef</span><span class="uc">Side for Salmon or Shrimp</span></div>
+      <div class="nb">Potatoes are one of the best satiety foods in the whole plan. Batch bake a tray of whole potatoes and they become breakfast, lunch, or dinner bases all week.</div>
+    </div>
+  </div>
+
+  <div class="card" id="c-pasta"><div class="card-header" onclick="tc('c-pasta')"><div><div class="card-title">Pasta — High Protein Friendly</div><div class="card-meta">Best cooked fresh · leftover pasta works in bowls</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <div class="rl">Ingredients</div>
+      <ul class="il"><li>Regular pasta or higher-protein pasta</li><li>Salted water</li></ul>
+      <div class="rl">Method</div>
+      <ol class="sl"><li>Cook just to al dente</li><li>If prepping ahead, rinse lightly to stop carryover, coat with a trace of oil or toss with sauce</li><li>Always reserve pasta water — it makes quick sauces glossy without extra fat</li></ol>
+      <div class="rl">Use It In</div>
+      <div class="use-in"><span class="uc">Garlic Chicken Pasta</span><span class="uc">Shrimp Pasta</span><span class="uc">Lean Ragu</span><span class="uc">Peppercorn Steak Pasta</span></div>
+      <div class="nb">Pasta belongs here. Better to use it intelligently than pretend you don't want it.</div>
+    </div>
+  </div>
+
+  <div class="card" id="c-burrito-base"><div class="card-header" onclick="tc('c-burrito-base')"><div><div class="card-title">Breakfast Burrito Base</div><div class="card-meta">6-8 burritos · fridge 3d · freeze tightly ✓</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <div class="rl">Ingredients</div>
+      <ul class="il"><li>Eggs and egg whites</li><li>Cooked beans</li><li>Cooked potatoes or rice (optional)</li><li>Cheese blend (70% fat-free + 30% 2%)</li><li>Large tortillas</li><li>Optional: taco beef or velveted chicken</li></ul>
+      <div class="rl">Method</div>
+      <ol class="sl"><li>Cook eggs softly — slightly underdone so they reheat well</li><li>Warm tortillas so they roll cleanly without cracking</li><li>Fill with eggs, beans, potatoes or meat, and cheese blend</li><li>Roll tightly, wrap in foil or parchment</li><li>Reheat in skillet, oven, or air fryer — much better texture than microwave alone</li></ol>
+      <div class="use-in"><span class="uc">Breakfast on Autopilot</span><span class="uc">Emergency Lunch</span><span class="uc">Post-Gym Meal</span></div>
+      <div class="nb">Adding beans keeps the meal more filling and helps digestion. Freeze a batch and you have breakfast for two weeks.</div>
+    </div>
+  </div>
+
+  <div class="card" id="c-beans-prep"><div class="card-header" onclick="tc('c-beans-prep')"><div><div class="card-title">Beans — Pressure Cooker Batch</div><div class="card-meta">~8-10 portions · 1 lb dry · fridge 5d · freeze ✓</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <div class="rl">Ingredients</div>
+      <ul class="il"><li>1 lb dry black beans, pinto beans, or chickpeas</li><li>Water</li><li>Kosher salt</li><li>Bay leaf, garlic, or onion (optional)</li></ul>
+      <div class="rl">Method</div>
+      <ol class="sl"><li>Rinse beans well. Pressure cook until tender with water covering by 2 inches</li><li>Salt toward the end if playing it safe on tenderness</li><li>Cool in some of their liquid for better texture</li><li>Portion with some cooking liquid so they don't dry out</li></ol>
+      <div class="use-in"><span class="uc">Breakfast Burritos</span><span class="uc">Taco Bowls</span><span class="uc">Chili</span><span class="uc">Rice Bowls</span><span class="uc">Soup</span></div>
+      <div class="nb">Beans solve the digestion issue better than stacking more dairy protein. Freeze in 1-cup Souper Cube portions for instant bowl additions.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="st">Freezer Flavor Boosters</div>
+  <p class="dim" style="margin-bottom:14px">The difference between having ingredients and having a system that still works when you're tired.</p>
+
+  <div class="card" id="c-garlic-confit"><div class="card-header" onclick="tc('c-garlic-confit')"><div><div class="card-title">Garlic Confit Cubes</div><div class="card-meta">Freeze in small portions · use from frozen</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <ol class="sl"><li>Cook garlic cloves gently in olive oil over very low heat until completely soft and golden — about 40 min</li><li>Mash or leave whole. Cool completely</li><li>Spoon into ice cube trays or Souper Cube ½-cup molds. Freeze solid</li><li>Transfer to a bag. Pull a cube whenever you need instant depth</li></ol>
+      <div class="use-in"><span class="uc">Pasta</span><span class="uc">Shrimp</span><span class="uc">Ragu</span><span class="uc">Roasted Veg</span><span class="uc">Yogurt Sauces</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="c-cam-onions"><div class="card-header" onclick="tc('c-cam-onions')"><div><div class="card-title">Caramelized Onions</div><div class="card-meta">Cook big batch · freeze flat or in cubes</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <ol class="sl"><li>Slice a large quantity of onions thin</li><li>Cook low and slow in a wide pan with a little oil and salt — 45-60 min, stirring occasionally</li><li>They should be deeply golden and jammy</li><li>Cool and freeze in thin layers on parchment, then break apart, or use Souper Cube molds</li></ol>
+      <div class="use-in"><span class="uc">Steak</span><span class="uc">Eggs</span><span class="uc">Beef Bowls</span><span class="uc">Loaded Potatoes</span><span class="uc">Wraps</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="c-herb-paste"><div class="card-header" onclick="tc('c-herb-paste')"><div><div class="card-title">Herb-Citrus Paste Cubes</div><div class="card-meta">Freeze in ice cube trays · fast finishing flavor</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <ol class="sl"><li>Blend fresh herbs (parsley, cilantro, or basil), lemon or lime zest, garlic, and a little olive oil or water</li><li>Season with salt</li><li>Freeze in ice cube trays or small molds</li><li>Drop a cube into the pan in the last 60 seconds of cooking</li></ol>
+      <div class="use-in"><span class="uc">Chicken</span><span class="uc">Shrimp</span><span class="uc">Potatoes</span><span class="uc">Rice Bowls</span><span class="uc">Yogurt Sauces</span></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="st">Souper Cubes Guide</div>
+  <div class="tb" style="font-size:11px;line-height:2.2">
+    <strong>½ cup cubes —</strong> sauces, broth concentrates, garlic confit, yogurt sauces<br>
+    <strong>1 cup cubes —</strong> rice, beans, chili, ragu (2 cubes = light meal for two)<br>
+    <strong>2 cup cubes —</strong> shredded beef, curry, soups (1 cube = main protein for two)<br><br>
+    Label with date + contents. Mix and match cubes to avoid repetition.
+  </div>
+</div>
+
+<!-- ═══════ SAUCES ═══════ -->
+<div class="section" id="section-sauces">
+  <div class="st">Sauce System</div>
+  <p class="dim" style="margin-bottom:16px">A small sauce list makes the same proteins feel like completely different meals. Fast, lower-fat, flexible.</p>
+
+  <div class="card" id="c-gy"><div class="card-header" onclick="tc('c-gy')"><div><div class="card-title">Garlic Yogurt Sauce</div><div class="card-meta">~2 cups · fridge 4-5d</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <ul class="il"><li>0% Greek yogurt</li><li>Fresh grated garlic or garlic powder</li><li>Lemon juice</li><li>Salt + black pepper</li><li>Optional herbs or dill</li></ul>
+      <p style="font-size:11px;color:var(--ink-dim);margin-top:9px;line-height:1.6;font-weight:300">Mix everything. Thin with water or Fairlife if needed.</p>
+      <div class="use-in"><span class="uc">Loaded Potato</span><span class="uc">Chicken Bowl</span><span class="uc">Shrimp Wrap</span><span class="uc">Burrito</span><span class="uc">Spicy Beef</span></div>
+      <div class="nb">Best sauce in the system. Works on almost everything.</div>
+    </div>
+  </div>
+
+  <div class="card" id="c-sm"><div class="card-header" onclick="tc('c-sm')"><div><div class="card-title">Spicy Yogurt-Mayo</div><div class="card-meta">~1.5 cups · fridge 4-5d</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <ul class="il"><li>Equal parts 0% Greek yogurt + light mayo (go heavier yogurt)</li><li>Sriracha to taste</li><li>Soy or salt</li><li>Rice vinegar or lemon</li></ul>
+      <p style="font-size:11px;color:var(--ink-dim);margin-top:9px;font-weight:300">Mayo adds body and cling — use it for that, not flavor.</p>
+      <div class="use-in"><span class="uc">Salmon Bowl</span><span class="uc">Taco Bowl</span><span class="uc">Shrimp Wrap</span><span class="uc">Rice Bowl</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="c-ter"><div class="card-header" onclick="tc('c-ter')"><div><div class="card-title">Teriyaki Lite</div><div class="card-meta">~1.5 cups · fridge 1 week</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <ul class="il"><li>Soy sauce</li><li>Rice vinegar</li><li>Small amount honey or low-cal sweetener</li><li>Garlic + ginger</li><li>Cornstarch slurry</li></ul>
+      <ol class="sl" style="margin-top:8px"><li>Simmer soy, vinegar, sweetener, garlic, ginger</li><li>Add cornstarch slurry, cook until glossy</li><li>Don't over-thicken — should coat lightly</li></ol>
+      <div class="nb">Easiest takeout-style lane. Chicken, beef, shrimp — all of them.</div>
+    </div>
+  </div>
+
+  <div class="card" id="c-rag"><div class="card-header" onclick="tc('c-rag')"><div><div class="card-title">Simple Tomato Ragu Base</div><div class="card-meta">~4 cups · fridge 5d · freeze ✓</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <ul class="il"><li>Crushed tomatoes</li><li>Tomato paste</li><li>Garlic</li><li>Salt, pepper, oregano, chili flake</li><li>Optional bone broth packet for body + protein</li></ul>
+      <ol class="sl" style="margin-top:8px"><li>Cook tomato paste until darker and sweeter</li><li>Add garlic, then crushed tomatoes</li><li>Simmer until thick and spoonable</li><li>Season aggressively — needs to carry pasta or potatoes</li></ol>
+    </div>
+  </div>
+
+  <div class="card" id="c-pep"><div class="card-header" onclick="tc('c-pep')"><div><div class="card-title">Peppercorn Bone Broth Sauce</div><div class="card-meta">2 servings · make fresh</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <ul class="il"><li>1 packet bone broth powder</li><li>Cracked black peppercorns</li><li>Garlic or shallot</li><li>0% Greek yogurt or Fairlife milk</li><li>Optional mustard</li></ul>
+      <ol class="sl" style="margin-top:8px"><li>After searing steak or chicken, toast peppercorns in pan</li><li>Add garlic or shallot if using</li><li>Whisk broth powder into water, add to pan, reduce</li><li>Off low heat, whisk in yogurt or Fairlife until smooth</li><li>Touch of mustard for steakhouse energy</li></ol>
+      <div class="nb">Most premium-feeling sauce in the book. Steak frites, chicken cutlet, steak + rice.</div>
+    </div>
+  </div>
+
+  <div class="card" id="c-gochujang"><div class="card-header" onclick="tc('c-gochujang')"><div><div class="card-title">Gochujang Sauce</div><div class="card-meta">~¾ cup · fridge 2 weeks</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <ul class="il"><li>2 tbsp gochujang paste</li><li>1 tbsp soy sauce</li><li>1 tbsp rice vinegar</li><li>1 tsp honey or low-cal sweetener</li><li>1 tsp sesame oil (toasted)</li><li>2 cloves garlic, grated (or ½ tsp garlic powder)</li><li>1 tsp fresh ginger, grated (optional)</li><li>1-2 tbsp water to thin to desired consistency</li></ul>
+      <div class="rl">Method</div>
+      <ol class="sl"><li>Whisk everything together until smooth</li><li>Taste — balance heat with honey, acid with vinegar, salt with soy</li><li>Thin with water to a sauce consistency. Thicker = marinade, thinner = drizzle</li><li>Use cold or warm — it handles both</li></ol>
+      <div class="use-in"><span class="uc">Korean Chicken Bowl</span><span class="uc">Ground Beef Bowl</span><span class="uc">Shrimp Stir-Fry</span><span class="uc">Rice + Broccoli</span><span class="uc">Dipping Sauce</span></div>
+      <div class="nb">Sesame oil is key — use toasted, not regular. A little goes very far. Start with ½ tsp and taste before adding more. This is also excellent as a quick marinade for chicken before cooking.</div>
+    </div>
+  </div>
+
+  <div class="card" id="c-tacosauce"><div class="card-header" onclick="tc('c-tacosauce')"><div><div class="card-title">Yogurt Taco Crema</div><div class="card-meta">~1 cup · fridge 5d · zero cook</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <ul class="il"><li>¾ cup 0% Greek yogurt</li><li>Juice of 1 lime</li><li>½ tsp cumin</li><li>½ tsp garlic powder</li><li>¼ tsp chili powder or smoked paprika</li><li>Salt to taste</li><li>Optional: splash of hot sauce</li></ul>
+      <p style="font-size:11px;color:var(--ink-dim);margin-top:9px;line-height:1.6;font-weight:300">Mix everything. Thin with a splash of water if needed for drizzle consistency.</p>
+      <div class="use-in"><span class="uc">Taco Bowls</span><span class="uc">Crispy Potato Bowls</span><span class="uc">Burritos</span><span class="uc">Crunchwrap</span><span class="uc">Shrimp Tacos</span></div>
+      <div class="nb">Replaces sour cream in every Mexican-style build. More protein, same creamy effect.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="st">Bone Broth Packet Uses</div>
+  <div class="tb" style="font-size:11px;line-height:2.1">
+    <strong>Fast soup —</strong> hot water + packet + frozen veg + any protein<br>
+    <strong>Pan sauce —</strong> use instead of stock for quick reductions<br>
+    <strong>Taco beef hack —</strong> splash in to keep lean beef juicy<br>
+    <strong>Tomato depth —</strong> drop into chili or ragu for body + protein<br>
+    <strong>Brothy rice bowl —</strong> concentrate over rice + scallions + protein
+  </div>
+</div>
+
+<!-- ═══════ SNACKS ═══════ -->
+<div class="section" id="section-snacks">
+  <div class="st">20 Quick Snacks</div>
+  <p class="dim" style="margin-bottom:16px">High protein · high fiber · low friction. Grab and assemble in 2 minutes.</p>
+  <div id="snack-list"></div>
+  <div class="divider"></div>
+  <div class="st">Always Keep Stocked</div>
+  <div class="ak">
+    <div class="aks"><div class="aksn">Fridge</div><div class="akchips"><span class="akchip">Washed cucumbers</span><span class="akchip">Baby carrots</span><span class="akchip">Yogurt sauces</span><span class="akchip">Boiled eggs</span><span class="akchip">Berries</span></div></div>
+    <div class="aks"><div class="aksn">Freezer</div><div class="akchips"><span class="akchip">Edamame bags</span><span class="akchip">Frozen fruit</span><span class="akchip">Broth cubes</span></div></div>
+    <div class="aks"><div class="aksn">Pantry</div><div class="akchips"><span class="akchip">Cereal</span><span class="akchip">PB powder</span><span class="akchip">Chia seeds</span><span class="akchip">Hummus</span><span class="akchip">Tajín</span></div></div>
+  </div>
+</div>
+
+<!-- ═══════ SMOOTHIES ═══════ -->
+<div class="section" id="section-smoothies">
+  <div class="st">Protein Smoothies</div>
+  <p class="dim" style="margin-bottom:16px">Built around whey + Fairlife. Add chia to any for extra fiber. Blend from frozen — no ice needed.</p>
+
+  <div class="smcard"><div class="smname">Chocolate PB Banana</div><ul class="smlist"><li>1 scoop chocolate whey</li><li>1 banana</li><li>1 tbsp peanut butter powder</li><li>1 tbsp chia seeds</li><li>1 cup Fairlife · ice</li></ul></div>
+  <div class="smcard"><div class="smname">Berry Cheesecake</div><ul class="smlist"><li>1 scoop vanilla or unflavored whey</li><li>1 cup frozen berries</li><li>½ cup Greek yogurt</li><li>1 tbsp chia seeds</li><li>Fairlife or water</li></ul></div>
+  <div class="smcard"><div class="smname">Chocolate Cherry Recovery</div><ul class="smlist"><li>Chocolate whey</li><li>Frozen cherries</li><li>Spinach</li><li>Oats</li><li>Fairlife</li></ul></div>
+  <div class="smcard"><div class="smname">Green Tropical</div><ul class="smlist"><li>Unflavored whey</li><li>Frozen mango</li><li>Spinach</li><li>Greek yogurt</li><li>Lime juice</li></ul></div>
+  <div class="smcard"><div class="smname">Mocha Oat</div><ul class="smlist"><li>Chocolate whey</li><li>Cold brew coffee</li><li>Oats</li><li>Fairlife</li></ul></div>
+
+  <div class="divider"></div>
+  <div class="st">Creatine</div>
+  <div class="tb" style="font-size:11px;line-height:2.1">
+    <strong>5g creatine monohydrate daily.</strong> Timing doesn't matter — consistency does.<br>
+    Easy spots: smoothies · cereal bowls · post-workout shakes<br>
+    Increase water intake when upping protein and fiber.
+  </div>
+</div>
+
+<!-- ═══════ SUPPS ═══════ -->
+<div class="section" id="section-supps">
+  <div class="st">Supplementation Strategy</div>
+  <p class="dim" style="margin-bottom:16px">All research-backed. Timing recommendations are based on what actually moves the needle — not marketing.</p>
+
+  <div class="card" id="s-creatine"><div class="card-header" onclick="tc('s-creatine')"><div><div class="card-title">Creatine Monohydrate</div><div class="card-meta">5g daily · most researched supplement in existence</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <div class="rl">Protocol</div>
+      <ul class="il"><li>5g daily — no loading phase needed</li><li>Any time of day works; consistency matters more than timing</li><li>Slightly better uptake taken post-workout or with a meal containing carbs, but the difference is minor</li><li>Mix into smoothies, cereal bowls, or post-workout shakes — tasteless and dissolves easily</li></ul>
+      <div class="rl">What it actually does</div>
+      <ul class="il"><li>Increases phosphocreatine stores → more ATP available for high-intensity effort</li><li>Meaningfully improves strength output, power, and rep capacity over time</li><li>Supports muscle protein synthesis, especially when training hard</li><li>Emerging evidence for cognitive benefits, particularly under sleep deprivation or stress</li><li>May slightly increase water retention in muscle tissue — this is normal and not fat</li></ul>
+      <div class="nb">Creatine monohydrate is the most studied, cheapest, and most effective form. Skip the fancy variants. Increase water intake by 1-2 cups per day while using.</div>
+    </div>
+  </div>
+
+  <div class="card" id="s-mag"><div class="card-header" onclick="tc('s-mag')"><div><div class="card-title">Magnesium Glycinate</div><div class="card-meta">300-400mg elemental magnesium · evening</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <div class="rl">Protocol</div>
+      <ul class="il"><li>300-400mg elemental magnesium as glycinate form</li><li>Take 30-60 minutes before bed — the glycinate form has a mild calming effect</li><li>With food or without — both fine, though food reduces any chance of loose stools</li><li>Glycinate is preferred over oxide (poor absorption) or citrate (more laxative effect)</li></ul>
+      <div class="rl">What it actually does</div>
+      <ul class="il"><li>Majority of people are deficient — high-protein, high-exercise lifestyles deplete magnesium faster</li><li>Supports deep sleep quality and sleep onset — well documented</li><li>Involved in 300+ enzymatic reactions including muscle contraction and protein synthesis</li><li>Helps regulate cortisol and the nervous system response to training stress</li><li>Reduces muscle cramps and supports recovery between sessions</li></ul>
+      <div class="nb">This is one of the highest-value, lowest-cost interventions for anyone training regularly. Most people notice better sleep within 1-2 weeks.</div>
+    </div>
+  </div>
+
+  <div class="card" id="s-omega"><div class="card-header" onclick="tc('s-omega')"><div><div class="card-title">Omega-3 (EPA + DHA)</div><div class="card-meta">2-3g combined EPA+DHA daily · with a fat-containing meal</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <div class="rl">Protocol</div>
+      <ul class="il"><li>Target 2-3g combined EPA + DHA per day (check the label — serving size and actual EPA/DHA content often differ)</li><li>Take with a meal that contains fat — absorption is significantly better</li><li>Morning or evening both fine; splitting the dose can reduce fishy aftertaste</li><li>Refrigerate after opening to slow oxidation</li></ul>
+      <div class="rl">What it actually does</div>
+      <ul class="il"><li>Reduces systemic inflammation — important for recovery, joint health, and long-term cardiovascular function</li><li>Supports muscle protein synthesis in conjunction with adequate protein intake</li><li>Strong evidence for reducing exercise-induced muscle soreness over time</li><li>DHA specifically supports brain function, mood regulation, and cognitive sharpness</li><li>Particularly relevant if fatty fish intake is inconsistent — which it often is on a prep-based system</li></ul>
+      <div class="nb">Look for a product that lists actual EPA and DHA milligrams on the label, not just "fish oil Xg." A typical 1g fish oil capsule may only contain 300mg of actual EPA+DHA.</div>
+    </div>
+  </div>
+
+  <div class="card" id="s-vitd"><div class="card-header" onclick="tc('s-vitd')"><div><div class="card-title">Vitamin D3 + K2</div><div class="card-meta">2,000-5,000 IU D3 daily · with a fat-containing meal</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <div class="rl">Protocol</div>
+      <ul class="il"><li>2,000-5,000 IU of D3 daily — higher end if you have limited sun exposure</li><li>Always pair with K2 (100-200mcg MK-7 form) — K2 directs calcium to bones, not arteries</li><li>Take with a fat-containing meal — D3 is fat-soluble and absorption drops significantly without it</li><li>Morning is preferable — high D3 taken at night may interfere with melatonin in some people</li></ul>
+      <div class="rl">What it actually does</div>
+      <ul class="il"><li>Over 70% of people in Northern latitudes are deficient — especially October through March</li><li>Critical for testosterone production, immune function, and bone density</li><li>Deficiency is directly linked to lower strength gains, poor mood, and impaired recovery</li><li>Supports calcium absorption and cardiovascular health when paired with K2</li></ul>
+      <div class="nb">Get bloodwork to check your 25(OH)D level. Optimal range for performance is generally 40-60 ng/mL. Most people supplementing 2,000 IU/day are still low.</div>
+    </div>
+  </div>
+
+  <div class="card" id="s-whey"><div class="card-header" onclick="tc('s-whey')"><div><div class="card-title">Whey Protein</div><div class="card-meta">Convenience tool · not a meal replacement</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <div class="rl">Protocol</div>
+      <ul class="il"><li>Use to hit protein targets on days when food intake falls short — not as the primary strategy</li><li>Best timing: within 2 hours post-workout if you haven't eaten a full meal</li><li>Whey isolate absorbs slightly faster than concentrate — useful post-workout; either works fine otherwise</li><li>Mix with Fairlife for a higher protein shake, or blend into smoothies</li></ul>
+      <div class="rl">What it actually does</div>
+      <ul class="il"><li>High leucine content makes it particularly effective at triggering muscle protein synthesis</li><li>Fast-digesting — peaks in blood amino acids faster than casein or plant proteins</li><li>Convenient when you need 30-40g of protein without cooking</li><li>Does not replace the satiety or micronutrients of whole food protein sources</li></ul>
+      <div class="nb">Real food first, whey to fill gaps. A day where you eat 4 solid protein meals and skip the shake is better than a day of shakes and minimal food.</div>
+    </div>
+  </div>
+
+  <div class="card" id="s-psyllium"><div class="card-header" onclick="tc('s-psyllium')"><div><div class="card-title">Psyllium Husk</div><div class="card-meta">Optional · 5-10g daily · with plenty of water</div></div><span class="arr">▶</span></div>
+    <div class="card-body">
+      <div class="rl">Protocol</div>
+      <ul class="il"><li>5-10g per day — start low and work up over 2 weeks to avoid gas and bloating</li><li>Always take with a full glass of water (at least 8 oz) — it expands significantly</li><li>Can be mixed into smoothies, yogurt, or oatmeal — texture is neutral when blended</li><li>Use only if digestion is still problematic despite consistently eating beans, potatoes, fruits, and vegetables</li></ul>
+      <div class="rl">What it actually does</div>
+      <ul class="il"><li>Soluble fiber that forms a gel in the gut — improves stool consistency in both directions</li><li>Slows glucose absorption — supports stable blood sugar after high-carb meals</li><li>Mild cholesterol-lowering effect with consistent use</li><li>Feeds beneficial gut bacteria</li></ul>
+      <div class="nb">This should be a last resort. If beans, fruit, potatoes, and frozen veg are in the daily rotation and digestion is still off, add this. Otherwise, fix the food first.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="st">Timing at a Glance</div>
+  <div class="tb" style="font-size:11px;line-height:2.3">
+    <strong>Morning with breakfast —</strong> Vitamin D3 + K2 (with fat), Omega-3 (with fat)<br>
+    <strong>Any time of day —</strong> Creatine (consistency beats perfect timing)<br>
+    <strong>Post-workout —</strong> Whey protein if no meal within 2 hours<br>
+    <strong>30-60 min before bed —</strong> Magnesium Glycinate<br>
+    <strong>With meals —</strong> Psyllium husk if using (always with water)
+  </div>
+
+  <div class="divider"></div>
+  <div class="st">System Rules</div>
+  <div class="rr"><span class="rb">◆</span><span class="rt">Don't rely on dairy for all protein. Yogurt, cheese, and Fairlife are support pieces — not the whole plan.</span></div>
+  <div class="rr"><span class="rb">◆</span><span class="rt">Beans and frozen veg are not optional. Digestion fix and fullness strategy. At least one bean-based meal daily.</span></div>
+  <div class="rr"><span class="rb">◆</span><span class="rt">Have at least one truly easy meal every day. Protein cereal, yogurt bowl, broth soup, or burrito all count.</span></div>
+  <div class="rr"><span class="rb">◆</span><span class="rt">Never let the freezer go empty. Frozen veg, shrimp, rice, and ground beef keep the system alive on chaotic days.</span></div>
+  <div class="rr"><span class="rb">◆</span><span class="rt">Season boldly. Lean food tastes flat when under-seasoned. Acid, salt, black pepper, and garlic — all of them.</span></div>
+  <div class="rr"><span class="rb">◆</span><span class="rt">Keep it premium enough to want. That's what the steak frites, peppercorn sauce, real cheese, and good potatoes are doing.</span></div>
+  <div class="rr"><span class="rb">◆</span><span class="rt">Freeze components and flavor boosters, not just full meals. Garlic confit, caramelized onions, bean portions, broth cubes.</span></div>
+  <div class="rr"><span class="rb">◆</span><span class="rt">Aim for 25-40g fiber daily. Beans, potato skin, frozen veg, berries, oats, chia seeds.</span></div>
+</div>
+<div class="section" id="section-pantry">
+  <div class="st">Master Pantry</div>
+  <p class="dim" style="margin-bottom:16px">Everything the system runs on. Organized by where it lives. Stock once, restock as needed.</p>
+
+  <div class="sc"><div class="sct">🧊 Freezer — Proteins</div>
+    <div class="si"><span class="sin">Chicken Breast</span><span class="siq">6-8 lb / bulk at Costco</span></div>
+    <div class="si"><span class="sin">Lean Ground Beef 90/10</span><span class="siq">3-5 lb flat packs</span></div>
+    <div class="si"><span class="sin">Beef for Shredding (chuck or top round)</span><span class="siq">3-4 lb</span></div>
+    <div class="si"><span class="sin">Shrimp, frozen peeled + deveined</span><span class="siq">2 lb bag</span></div>
+    <div class="si"><span class="sin">Salmon (freeze what you won't use in 2d)</span><span class="siq">2-3 lb</span></div>
+  </div>
+
+  <div class="sc"><div class="sct">🧊 Freezer — Vegetables</div>
+    <div class="si"><span class="sin">Broccoli florets</span><span class="siq">6-8 bags</span></div>
+    <div class="si"><span class="sin">Stir-fry mix</span><span class="siq">3-4 bags</span></div>
+    <div class="si"><span class="sin">Peppers and onions</span><span class="siq">2-3 bags</span></div>
+    <div class="si"><span class="sin">Spinach</span><span class="siq">2 bags</span></div>
+    <div class="si"><span class="sin">Edamame (shelled)</span><span class="siq">4-6 bags</span></div>
+    <div class="si"><span class="sin">Peas</span><span class="siq">2 bags</span></div>
+  </div>
+
+  <div class="sc"><div class="sct">🧊 Freezer — Fruit + Carbs</div>
+    <div class="si"><span class="sin">Mixed berries</span><span class="siq">3-5 bags</span></div>
+    <div class="si"><span class="sin">Mango chunks</span><span class="siq">2 bags</span></div>
+    <div class="si"><span class="sin">Cherries</span><span class="siq">1-2 bags</span></div>
+    <div class="si"><span class="sin">Cooked rice portions</span><span class="siq">portioned from batch</span></div>
+    <div class="si"><span class="sin">Cooked beans portions</span><span class="siq">portioned with liquid</span></div>
+  </div>
+
+  <div class="sc"><div class="sct">🧊 Freezer — Flavor Boosters</div>
+    <div class="si"><span class="sin">Garlic confit cubes</span><span class="siq">½-cup mold portions</span></div>
+    <div class="si"><span class="sin">Caramelized onion cubes</span><span class="siq">flat-frozen or cubed</span></div>
+    <div class="si"><span class="sin">Herb-citrus paste cubes</span><span class="siq">ice cube trays</span></div>
+    <div class="si"><span class="sin">Bone broth concentrate cubes</span><span class="siq">reduced + frozen</span></div>
+    <div class="si"><span class="sin">Ragu sauce (Souper Cubes)</span><span class="siq">1-cup portions</span></div>
+    <div class="si"><span class="sin">Shredded beef (Souper Cubes)</span><span class="siq">2-cup portions</span></div>
+  </div>
+
+  <div class="sc"><div class="sct">❄️ Fridge — Proteins + Dairy</div>
+    <div class="si"><span class="sin">Salmon (fresh, bake within 2d)</span><span class="siq">2-3 lb</span></div>
+    <div class="si"><span class="sin">Salmon mix (prepped)</span><span class="siq">fridge 2-3d</span></div>
+    <div class="si"><span class="sin">Velveted chicken (par-cooked)</span><span class="siq">fridge 3-4d</span></div>
+    <div class="si"><span class="sin">Shredded beef (cooked)</span><span class="siq">fridge 4d</span></div>
+    <div class="si"><span class="sin">Cooked ground beef</span><span class="siq">fridge 3-4d</span></div>
+    <div class="si"><span class="sin">Turkey lunch meat</span><span class="siq">1-2 packs</span></div>
+    <div class="si"><span class="sin">Eggs</span><span class="siq">2 dozen</span></div>
+    <div class="si"><span class="sin">Liquid egg whites</span><span class="siq">1 carton</span></div>
+    <div class="si"><span class="sin">0% Greek yogurt</span><span class="siq">1-2 large tubs</span></div>
+    <div class="si"><span class="sin">Fairlife milk</span><span class="siq">2-3 bottles</span></div>
+    <div class="si"><span class="sin">Lowfat cheese slices</span><span class="siq">1 pack</span></div>
+    <div class="si"><span class="sin">Fat-free + 2% shredded cheese blend</span><span class="siq">70/30 mix</span></div>
+    <div class="si"><span class="sin">Light mayo</span><span class="siq">1 jar</span></div>
+  </div>
+
+  <div class="sc"><div class="sct">❄️ Fridge — Prepped Carbs + Veg</div>
+    <div class="si"><span class="sin">Cooked rice</span><span class="siq">fridge 4d</span></div>
+    <div class="si"><span class="sin">Baked potatoes</span><span class="siq">fridge 4d</span></div>
+    <div class="si"><span class="sin">Cooked beans (with liquid)</span><span class="siq">fridge 5d</span></div>
+    <div class="si"><span class="sin">Washed cucumbers + carrots</span><span class="siq">fridge in water</span></div>
+    <div class="si"><span class="sin">Pickled onions (quick pickled)</span><span class="siq">fridge 2 weeks</span></div>
+    <div class="si"><span class="sin">Garlic yogurt sauce</span><span class="siq">fridge 4-5d</span></div>
+    <div class="si"><span class="sin">Spicy yogurt-mayo</span><span class="siq">fridge 4-5d</span></div>
+  </div>
+
+  <div class="sc"><div class="sct">🥩 Fresh / Weekly Buy</div>
+    <div class="si"><span class="sin">Chicken breast</span><span class="siq">6-8 lb</span></div>
+    <div class="si"><span class="sin">Rotisserie chicken (Costco)</span><span class="siq">1-2 birds as needed</span></div>
+    <div class="si"><span class="sin">Lean ground beef</span><span class="siq">3-5 lb</span></div>
+    <div class="si"><span class="sin">Salmon</span><span class="siq">2-3 lb</span></div>
+    <div class="si"><span class="sin">Potatoes (russet or Yukon Gold)</span><span class="siq">6-10 large</span></div>
+    <div class="si"><span class="sin">Sourdough bread</span><span class="siq">1 loaf</span></div>
+    <div class="si"><span class="sin">Berries (fresh)</span><span class="siq">as needed</span></div>
+  </div>
+
+  <div class="sc"><div class="sct">🏪 Dry Pantry — Carbs + Starches</div>
+    <div class="si"><span class="sin">Jasmine or white rice</span><span class="siq">large bag</span></div>
+    <div class="si"><span class="sin">Regular and/or high-protein pasta</span><span class="siq">2-3 boxes</span></div>
+    <div class="si"><span class="sin">Tortillas (large burrito size)</span><span class="siq">2 packs</span></div>
+    <div class="si"><span class="sin">Dry black beans</span><span class="siq">2 lb bag</span></div>
+    <div class="si"><span class="sin">Dry pinto beans or chickpeas</span><span class="siq">1 lb bag</span></div>
+    <div class="si"><span class="sin">Canned beans (backup)</span><span class="siq">4-6 cans</span></div>
+    <div class="si"><span class="sin">Canned tuna in water</span><span class="siq">8-12 cans</span></div>
+    <div class="si"><span class="sin">White beans (canned)</span><span class="siq">2-4 cans</span></div>
+    <div class="si"><span class="sin">High-protein cereal</span><span class="siq">1-2 boxes</span></div>
+    <div class="si"><span class="sin">Rolled oats</span><span class="siq">1 bag</span></div>
+    <div class="si"><span class="sin">Nori sheets</span><span class="siq">1 pack</span></div>
+  </div>
+
+  <div class="sc"><div class="sct">🏪 Dry Pantry — Protein Helpers</div>
+    <div class="si"><span class="sin">Whey protein powder</span><span class="siq">large tub</span></div>
+    <div class="si"><span class="sin">Bone broth powder packets</span><span class="siq">1-2 Costco boxes</span></div>
+    <div class="si"><span class="sin">Peanut butter powder</span><span class="siq">1 tub</span></div>
+    <div class="si"><span class="sin">Chia seeds</span><span class="siq">1 bag</span></div>
+  </div>
+
+  <div class="sc"><div class="sct">🏪 Dry Pantry — Sauces + Condiments</div>
+    <div class="si"><span class="sin">Soy sauce (low sodium preferred)</span><span class="siq">1 bottle</span></div>
+    <div class="si"><span class="sin">Rice vinegar</span><span class="siq">1 bottle</span></div>
+    <div class="si"><span class="sin">Red wine vinegar</span><span class="siq">1 bottle</span></div>
+    <div class="si"><span class="sin">Dijon mustard</span><span class="siq">1 jar</span></div>
+    <div class="si"><span class="sin">Hot sauce (Cholula, Frank's, or similar)</span><span class="siq">1-2 bottles</span></div>
+    <div class="si"><span class="sin">Sriracha</span><span class="siq">1 bottle</span></div>
+    <div class="si"><span class="sin">Chili crisp (use lightly)</span><span class="siq">1 jar</span></div>
+    <div class="si"><span class="sin">Gochujang paste</span><span class="siq">1 tub</span></div>
+    <div class="si"><span class="sin">Fish sauce</span><span class="siq">1 bottle</span></div>
+    <div class="si"><span class="sin">Sesame oil (toasted — use sparingly)</span><span class="siq">1 small bottle</span></div>
+    <div class="si"><span class="sin">Crushed tomatoes</span><span class="siq">4-6 cans</span></div>
+    <div class="si"><span class="sin">Tomato paste</span><span class="siq">2-3 tubes or cans</span></div>
+    <div class="si"><span class="sin">Pickle juice</span><span class="siq">keep the jar</span></div>
+    <div class="si"><span class="sin">Tajín</span><span class="siq">1 bottle</span></div>
+    <div class="si"><span class="sin">Hummus</span><span class="siq">1-2 tubs (fridge)</span></div>
+    <div class="si"><span class="sin">Honey</span><span class="siq">1 bottle (small)</span></div>
+  </div>
+
+  <div class="sc"><div class="sct">🏪 Dry Pantry — Spices + Seasonings</div>
+    <div class="si"><span class="sin">Kosher salt + black pepper</span><span class="siq">always</span></div>
+    <div class="si"><span class="sin">Garlic powder</span><span class="siq">large jar</span></div>
+    <div class="si"><span class="sin">Onion powder</span><span class="siq">large jar</span></div>
+    <div class="si"><span class="sin">Cumin</span><span class="siq">large jar</span></div>
+    <div class="si"><span class="sin">Chili powder</span><span class="siq">large jar</span></div>
+    <div class="si"><span class="sin">Smoked paprika</span><span class="siq">large jar</span></div>
+    <div class="si"><span class="sin">Oregano</span><span class="siq">large jar</span></div>
+    <div class="si"><span class="sin">Chili flakes</span><span class="siq">large jar</span></div>
+    <div class="si"><span class="sin">Garam masala</span><span class="siq">1 jar</span></div>
+    <div class="si"><span class="sin">Turmeric</span><span class="siq">1 jar</span></div>
+    <div class="si"><span class="sin">Coriander (ground)</span><span class="siq">1 jar</span></div>
+    <div class="si"><span class="sin">Cinnamon</span><span class="siq">1 jar</span></div>
+    <div class="si"><span class="sin">Allspice</span><span class="siq">1 jar</span></div>
+    <div class="si"><span class="sin">Tandoori seasoning blend</span><span class="siq">1 jar</span></div>
+    <div class="si"><span class="sin">Cornstarch</span><span class="siq">1 box</span></div>
+    <div class="si"><span class="sin">Baking soda (for velveting)</span><span class="siq">1 box</span></div>
+    <div class="si"><span class="sin">Sesame seeds</span><span class="siq">1 jar</span></div>
+  </div>
+
+  <div class="sc"><div class="sct">📦 Costco / Bulk Run</div>
+    <div class="si"><span class="sin">Chicken Breast</span><span class="siq">bulk freezer stock</span></div>
+    <div class="si"><span class="sin">Lean Ground Beef</span><span class="siq">bulk flat packs</span></div>
+    <div class="si"><span class="sin">Shrimp</span><span class="siq">2 lb bags × 3-4</span></div>
+    <div class="si"><span class="sin">Eggs</span><span class="siq">flat of 36</span></div>
+    <div class="si"><span class="sin">Fairlife Milk</span><span class="siq">multi-pack</span></div>
+    <div class="si"><span class="sin">Greek Yogurt</span><span class="siq">bulk tubs</span></div>
+    <div class="si"><span class="sin">Bone Broth Packets</span><span class="siq">2-3 boxes</span></div>
+    <div class="si"><span class="sin">Rice</span><span class="siq">20-25 lb bag</span></div>
+    <div class="si"><span class="sin">Potatoes</span><span class="siq">10-20 lb bag</span></div>
+    <div class="si"><span class="sin">Protein Powder</span><span class="siq">large tub</span></div>
+    <div class="si"><span class="sin">Frozen Vegetables</span><span class="siq">10-20 bags</span></div>
+    <div class="si"><span class="sin">Frozen Fruit</span><span class="siq">8-12 bags</span></div>
+    <div class="si"><span class="sin">Canned Tuna</span><span class="siq">case of 12</span></div>
+  </div>
+</div>
+
+
+
+</div>
+
+<script>
+// ── NAV ──
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ── CARD TOGGLE ──
+function tc(id) { document.getElementById(id).classList.toggle('open'); }
+
+// ── MEALS ──
+// cuisine keys: mex, jp, kr, in, me (middle east), it, us, any
+const mealGroups = [
+  {
+    key: 'chicken', label: 'Chicken', icon: '🍗',
+    meals: [
+      { name:'Chicken Teriyaki Bowl', c:'Velveted Chicken · Rice · Broccoli · Teriyaki Lite', note:'Finish with sesame seeds if you like them.', cx:['jp'] },
+      { name:'Chicken Fried Rice', c:'Rice · Chicken · Egg Whites · Stir-Fry Veg · Soy', note:'Extra soy, white pepper, and garlic go a long way.', cx:['jp'] },
+      { name:'Garlic Chicken Pasta', c:'Chicken · Pasta · Garlic Confit · Broccoli · Parm', note:'Use pasta water to make it glossy — no oil needed.', cx:['it'] },
+      { name:'Chicken Enchilada Wrap', c:'Chicken · Tortilla · Salsa · Cheese · Beans', note:'Roll and toast like a burrito, or bake lightly with more salsa.', cx:['mex'] },
+      { name:'Gochujang Chicken Bowl', c:'Velveted Chicken · Gochujang Sauce · Rice · Broccoli · Cucumber', note:'Marinate or toss after cooking. Add a soft egg for extra richness.', cx:['kr'] },
+      { name:'Chicken Tikka Bowl', c:'Velveted Chicken · Garam Masala Yogurt · Rice · Peas', note:'Same velveted chicken, dressed with tikka-style spiced yogurt sauce.', cx:['in'] },
+      { name:'Butter Chicken Bowl', c:'Velveted Chicken · Tomato + Bone Broth + Yogurt · Garam Masala', note:'Lighter using yogurt instead of cream. Over rice.', cx:['in'] },
+      { name:'Chicken Gyro Wrap', c:'Chicken · Tzatziki Yogurt · Tomatoes · Pickled Onions · Pita or Tortilla', note:'Quick tzatziki: yogurt + garlic + dill + lemon.', cx:['me'] },
+      { name:'Chicken Souvlaki Bowl', c:'Chicken · Lemon Potatoes · Cucumber Tomato Salad · Garlic Yogurt', note:'Marinate in lemon + oregano + garlic before cooking.', cx:['me'] },
+      { name:'Buffalo Chicken Loaded Potato', c:'Chicken · Buffalo Sauce · Yogurt Ranch · Cheese · Scallions', note:'Yogurt ranch: yogurt + garlic powder + onion powder + dried dill + lemon.', cx:['us'] },
+      { name:'Chicken Adobo Bowl', c:'Chicken · Soy + Vinegar + Garlic · Rice · Cucumber', note:'Deglaze the chicken pan with soy and white vinegar. Reduce until slightly sticky.', cx:['jp'] },
+    ]
+  },
+  {
+    key: 'rotisserie', label: 'Rotisserie Chicken', icon: '🍗',
+    meals: [
+      { name:'Rotisserie Rice Bowl', c:'Shredded Rotisserie · Rice · Garlic Yogurt · Cucumber · Hot Sauce', note:'Strip the chicken cold, reheat rice, assemble. Dinner in 4 minutes.', cx:[] },
+      { name:'Rotisserie Chicken Soup', c:'Rotisserie Meat + Carcass Broth · Bone Broth Packet · Frozen Veg · Rice or Noodles', note:'Simmer carcass in water 20 min with a broth packet for instant high-protein soup. Shred remaining meat in.', cx:[] },
+      { name:'Rotisserie Fried Rice', c:'Rotisserie Chicken · Day-Old Rice · Egg Whites · Frozen Stir-Fry Veg · Soy', note:'Sub directly for velveted chicken. Because the meat is already seasoned, go lighter on soy.', cx:['jp'] },
+      { name:'Rotisserie Quesadilla', c:'Shredded Rotisserie · Cheese Blend · Tortilla · Salsa · Yogurt Crema', note:'Shred cold chicken, fill tortilla, press in a pan 2 min per side. As fast as it gets.', cx:['mex'] },
+      { name:'Rotisserie Loaded Potato', c:'Baked Potato · Shredded Rotisserie · Garlic Yogurt · Scallions · Chili Flake', note:'Reheat the potato, top cold chicken, add yogurt sauce. Zero reheating needed on the chicken.', cx:['us'] },
+      { name:'Rotisserie Enchilada Wrap', c:'Rotisserie Chicken · Tortilla · Salsa · Cheese Blend · Beans', note:'Roll, toast seam-down in a dry pan. The chicken is already flavorful — keep the rest simple.', cx:['mex'] },
+      { name:'Rotisserie Chicken Tikka Bowl', c:'Rotisserie Chicken · Garam Masala + Yogurt Sauce · Rice · Frozen Peas', note:'Toss cold shredded chicken in a quick tikka yogurt sauce. No extra cooking needed.', cx:['in'] },
+      { name:'Rotisserie Pasta', c:'Shredded Rotisserie · Tomato Ragu or Garlic Confit · Pasta · Parm', note:'Pull chicken, fold into hot pasta and sauce. Dinner in the time it takes to boil water.', cx:['it'] },
+      { name:'Rotisserie Taco Bowl', c:'Rotisserie Chicken · Taco Seasoning Toss · Rice · Beans · Salsa · Yogurt Crema', note:'Warm chicken in a pan with a splash of broth and taco spice. Takes 3 minutes.', cx:['mex'] },
+      { name:'Rotisserie Gyro Wrap', c:'Rotisserie Chicken · Garlic Yogurt · Pickled Onions · Cucumber · Tortilla or Pita', note:'Already-seasoned rotisserie works surprisingly well as a gyro sub. Add lemon and oregano if you have it.', cx:['me'] },
+    ]
+  },
+  {
+    key: 'beef', label: 'Beef', icon: '🥩',
+    meals: [
+      { name:'Shredded Beef Taco Bowl', c:'Shredded Beef · Rice · Beans · Salsa · Garlic Yogurt', note:'Add lettuce, pickled onions, or hot sauce.', cx:['mex'] },
+      { name:'Shredded Beef Loaded Potato', c:'Baked Potato · Shredded Beef · Garlic Yogurt · Pickled Onions', note:'Very high satiety dinner.', cx:['us'] },
+      { name:'Quick Chili Bowl', c:'Ground Beef Chili · Beans · Yogurt · Scallions', note:'Tortilla chips on the side only if it still fits the day.', cx:['us','mex'] },
+      { name:'Taco Beef Quesadilla', c:'Taco Beef · Cheese · Tortilla · Spicy Yogurt-Mayo', note:'Cook until crisp. Cut into wedges.', cx:['mex'] },
+      { name:'Lean Ragu Pasta', c:'Ground Beef Ragu · Pasta · Optional Spinach', note:'High-protein pasta works especially well here.', cx:['it'] },
+      { name:'Korean-ish Beef Bowl', c:'Soy-Garlic Beef · Rice · Broccoli or Green Beans', note:'Add a fried egg if you want more richness.', cx:['kr'] },
+      { name:'Gochujang Beef Bowl', c:'Ground Beef · Gochujang Sauce · Rice · Cucumber · Scallion', note:'Cook beef, drain, toss in gochujang sauce, serve over rice.', cx:['kr'] },
+      { name:'Crunchwrap-Style Plate', c:'Taco Beef · Rice or Beans · Cheese · Yogurt Crema · Tortilla', note:"Keep it lean and compact. Don't overbuild.", cx:['mex'] },
+      { name:'Ground Beef Shawarma Bowl', c:'Ground Beef · Cumin/Coriander/Cinnamon · Rice · Garlic Yogurt', note:'Cucumber and tomato salad on top.', cx:['me'] },
+      { name:'Moroccan Beef Bowl', c:'Shredded Beef · Cumin + Cinnamon + Paprika · Chickpeas · Yogurt · Rice', note:"The cinnamon is essential — don't skip it.", cx:['me'] },
+      { name:'Ragu Toast Melt', c:'Toast · Ground Beef Ragu · Cheese Blend', note:'Comfort-food lunch that stays within the system.', cx:['it'] },
+      { name:'Cheeseburger Potato Skillet', c:'Lean Ground Beef · Crispy Potatoes · Yogurt Burger Sauce · Pickles · Cheese', note:'Burger sauce: yogurt + mustard + ketchup + pickle juice.', cx:['us'] },
+      { name:'Steak Frites', c:'Tenderloin · Air-Fried Fries · Peppercorn Bone Broth Sauce', note:'Date-night dinner. Use leftover steak in rice bowls next day.', cx:['it','us'] },
+      { name:'Steak Rice Plate', c:'Sliced Tenderloin · Rice · Broccoli · Peppercorn Sauce', note:'Easier than frites on a weeknight.', cx:['us'] },
+      { name:'Turkish Beef Rice Pilaf', c:'Seasoned Ground Beef · Rice in Broth · Garlic Yogurt · Cucumber Salad', note:'Season beef with allspice, cumin, and black pepper.', cx:['me'] },
+    ]
+  },
+  {
+    key: 'salmon', label: 'Salmon', icon: '🐟',
+    meals: [
+      { name:'Pseudo Sushi Bowl', c:'Salmon Mix · Rice · Cucumber · Nori · Spicy Yogurt-Mayo', note:'Good with edamame or avocado — not required.', cx:['jp'] },
+      { name:'Salmon Wrap', c:'Salmon Mix · Tortilla · Cucumber · Pickled Onions', note:'Great cold lunch option.', cx:[] },
+      { name:'Salmon Toast', c:'Toast · Salmon Mix · Cucumber · Hot Sauce', note:'If salmon mix is prepped, this is 2 minutes flat.', cx:[] },
+    ]
+  },
+  {
+    key: 'shrimp', label: 'Shrimp', icon: '🍤',
+    meals: [
+      { name:'Shrimp Garlic Pasta', c:'Shrimp · Pasta · Garlic Cube · Chili Flake · Spinach', note:'Finish with lemon and Parm if wanted.', cx:['it'] },
+      { name:'Shrimp Fried Rice', c:'Rice · Shrimp · Eggs · Stir-Fry Veg · Soy', note:'One of the best emergency dinners.', cx:['jp'] },
+      { name:'Shrimp Broth Bowl', c:'Bone Broth · Shrimp · Spinach · Rice', note:'Reset meal when digestion is off.', cx:['jp'] },
+      { name:'Tandoori Shrimp Bowl', c:'Shrimp · Yogurt Tandoori Marinade · Rice · Frozen Veg', note:'Quick marinade, hot pan, bowl over rice.', cx:['in'] },
+      { name:'Shrimp Teriyaki Bowl', c:'Shrimp · Rice · Broccoli · Teriyaki Lite', note:'Same teriyaki lane, different protein.', cx:['jp'] },
+      { name:'Gochujang Shrimp Bowl', c:'Shrimp · Gochujang Sauce · Rice · Cucumber · Sesame', note:'Pat shrimp dry, cook hot and fast, toss in sauce off heat.', cx:['kr'] },
+    ]
+  },
+  {
+    key: 'eggs', label: 'Eggs', icon: '🥚',
+    meals: [
+      { name:'Breakfast Burrito', c:'Eggs · Beans · Potatoes · Cheese · Salsa', note:'Roll in a large tortilla. Add taco beef or chicken to bulk it up.', cx:['mex'] },
+      { name:'Eggs + Beans Bowl', c:'Eggs · Beans · Potatoes or Rice · Hot Sauce', note:'Simple, cheap, effective.', cx:[] },
+      { name:'Protein Cereal Bowl', c:'Fairlife · Whey · Cereal · Berries', note:'High-protein meal, not just a snack. Great on rushed mornings.', cx:[] },
+    ]
+  },
+  {
+    key: 'yogurt', label: 'Yogurt / Dairy', icon: '🥛',
+    meals: [
+      { name:'Greek Yogurt Parfait', c:'0% Yogurt · Frozen Berries · Cereal · Chia', note:'Moderate crunchy toppings so it feels like a real dish.', cx:[] },
+      { name:'Bone Broth Soup', c:'Broth Packet · Water · Veg · Leftover Protein', note:'Anti-takeout insurance meal. Pairs with any protein from the fridge.', cx:[] },
+    ]
+  },
+];
+
+let activeProtein = 'all';
+let activeCuisine = 'all';
+
+function renderMeals() {
+  const g = document.getElementById('meal-grid');
+  g.innerHTML = '';
+
+  const allMeals = [];
+  mealGroups.forEach(gr => {
+    gr.meals.forEach(m => allMeals.push({ ...m, proKey: gr.key, proLabel: gr.label, proIcon: gr.icon }));
+  });
+
+  // Filter by protein
+  let filtered = activeProtein === 'all' ? allMeals : allMeals.filter(m => m.proKey === activeProtein);
+
+  // Filter by cuisine
+  if (activeCuisine !== 'all') {
+    filtered = filtered.filter(m => m.cx && m.cx.includes(activeCuisine));
+  }
+
+  if (activeCuisine !== 'all' || activeProtein !== 'all') {
+    // Flat list when any filter active
+    filtered.forEach(m => g.appendChild(makeMealRow(m, true)));
+  } else {
+    // Grouped by protein when both are 'all'
+    mealGroups.forEach(group => {
+      const groupEl = document.createElement('div');
+      groupEl.className = 'pro-group';
+      groupEl.innerHTML = `
+        <div class="pro-group-header">
+          <span class="pro-icon">${group.icon}</span>
+          <span class="pro-label">${group.label}</span>
+          <span class="pro-line"></span>
+        </div>
+        <div class="pro-rows"></div>
+      `;
+      const rowsEl = groupEl.querySelector('.pro-rows');
+      group.meals.forEach(m => rowsEl.appendChild(makeMealRow(m, false)));
+      g.appendChild(groupEl);
+    });
+  }
+
+  if (g.children.length === 0) {
+    g.innerHTML = '<p style="font-size:11px;color:var(--ink-faint);padding:12px 0;font-style:italic">No meals match this combination.</p>';
+  }
+}
+
+function makeMealRow(m, showProIcon) {
+  const d = document.createElement('div');
+  d.className = 'mr';
+  const prefix = showProIcon && m.proIcon ? `<span style="font-size:13px;margin-right:4px;line-height:1">${m.proIcon}</span>` : '';
+  d.innerHTML = `<div class="mn">${prefix}${m.name}</div><div class="mc">${m.c}</div><div class="mnote">${m.note}</div>`;
+  d.onclick = () => d.classList.toggle('open');
+  return d;
+}
+
+function filterMeals(val, type, btn) {
+  if (type === 'protein') {
+    activeProtein = val;
+    document.querySelectorAll('#filter-protein .fb').forEach(b => b.classList.remove('active'));
+  } else {
+    activeCuisine = val;
+    document.querySelectorAll('#filter-cuisine .fb').forEach(b => b.classList.remove('active'));
+  }
+  btn.classList.add('active');
+  renderMeals();
+}
+
+// ── SNACKS ──
+const snacks = [
+  { em:'🥕', name:'Baby Carrots + Garlic Yogurt Dip', badges:['hp','ft'], ing:['Greek yogurt','garlic','lemon','salt'], tip:'Better protein than hummus-only' },
+  { em:'🥒', name:'Cucumbers + Tajín + Cottage Cheese or Yogurt', badges:['ft'], ing:['Persian or English cucumber','Tajín','cottage cheese or 0% yogurt'], tip:'Crunchy, salty, refreshing — zero effort' },
+  { em:'🍎', name:'Apple + PB Powder Yogurt Dip', badges:['hf','ft'], ing:['Greek yogurt','PB powder','cinnamon','apple slices'], tip:'Mix the dip first, slice apple fresh' },
+  { em:'🍓', name:'Greek Yogurt Parfait', badges:['hp','hf'], ing:['0% Greek yogurt','frozen berries (thawed)','cereal or granola','chia seeds'], tip:'Real meal, not just a snack' },
+  { em:'🫑', name:'Bell Pepper Boats', badges:['hf','ft'], ing:['Bell pepper halves','hummus','taco beef or yogurt sauce'], tip:'Stuff with whatever protein is in the fridge' },
+  { em:'🧆', name:'Hummus + Veg Plate', badges:['hf','ft'], ing:['Hummus','baby carrots','cucumbers','snap peas','peppers'], tip:'Classic for a reason. Pre-wash veg Sunday' },
+  { em:'🍿', name:'Protein Cereal Bowl', badges:['hp','ft'], ing:['Fairlife milk','whey protein','high-protein cereal'], tip:'Huge meal-snack hybrid. Works any time of day' },
+  { em:'🥚', name:'Jammy Eggs + Chili Crisp', badges:['hp','ft'], ing:['2-3 eggs, 7-min boil','chili crisp or hot sauce + soy'], tip:'Batch boil 6 eggs Sunday, eat all week' },
+  { em:'🥔', name:'Crispy Air-Fried Potato Cubes', badges:['hf'], ing:['Potatoes cubed small','oil spray','seasoning blend','garlic yogurt dip'], tip:'Very high satiety. Batch air-fry and reheat' },
+  { em:'🥒', name:'Pickles + Chicken or Turkey Wrap-Ups', badges:['hp','ft'], ing:['Sliced deli chicken or turkey','pickle spears or cucumber spears'], tip:'Roll slices around pickles — zero prep' },
+  { em:'🍉', name:'Watermelon + Tajín + Lime', badges:['hf','ft'], ing:['Watermelon chunks','Tajín','lime wedge'], tip:'Summer default. Insanely refreshing' },
+  { em:'🥜', name:'Edamame', badges:['hp','hf','ft'], ing:['Frozen edamame bag','kosher salt','chili flakes'], tip:'Microwave 3 min. Sneaky protein and fiber monster' },
+  { em:'🧀', name:'Cheese Blend Quesadilla', badges:['hp','ft'], ing:['Fat-free + 2% cheese blend','large tortilla','salsa'], tip:'Keep it light and crisp. Cut into wedges' },
+  { em:'🍌', name:'Chocolate Protein Banana Pudding Bowl', badges:['hp'], ing:['Sliced banana','chocolate whey mixed into yogurt','chia seeds'], tip:'Mix whey into yogurt first, then fold in banana' },
+  { em:'🥗', name:'Mediterranean Snack Bowl', badges:['hp','hf'], ing:['Cucumber','cherry tomatoes','hummus','olives','leftover chicken or beef'], tip:'Just chop and arrange. No cooking' },
+  { em:'🌽', name:'Mexican Street Corn Yogurt Cups', badges:['hf'], ing:['Corn (canned or frozen thawed)','lime juice','chili powder','0% Greek yogurt','cotija or Parm'], tip:'Mix and eat cold or warm — both work' },
+  { em:'🍞', name:'Salmon Toast', badges:['hp','ft'], ing:['Toasted bread','shredded salmon mix from fridge','cucumber slices'], tip:'If salmon mix is prepped, this is 2 minutes flat' },
+  { em:'🍐', name:'Pear + Cheese', badges:['ft'], ing:['Ripe pear, sliced','sharp 2% cheese or cottage cheese'], tip:'One of the most underrated snack combos. Period.' },
+  { em:'🍫', name:'Frozen Chocolate Berry Protein Bark', badges:['hp'], ing:['0% Greek yogurt','chocolate whey','frozen berries'], tip:'Mix, spread flat on parchment, freeze 2hrs, break and store' },
+  { em:'🍲', name:'Mini Bone Broth Soup Cup', badges:['hp','ft'], ing:['Bone broth packet','hot water','frozen veg','leftover chicken or shrimp'], tip:'Warm high-protein snack beats random grazing every time' },
+];
+
+function renderSnacks() {
+  const list = document.getElementById('snack-list');
+  list.innerHTML = '';
+  const bmap = { hp:['HP','hp'], hf:['FIBER','hf'], ft:['FAST','ft'] };
+  snacks.forEach((s, i) => {
+    const id = 'sn' + i;
+    const div = document.createElement('div');
+    div.className = 'snack-card';
+    div.id = id;
+    div.innerHTML = `
+      <div class="snack-h" onclick="document.getElementById('${id}').classList.toggle('open')">
+        <span class="snack-em">${s.em}</span>
+        <span class="snack-name">${i + 1}. ${s.name}</span>
+        ${s.badges.map(b => `<span class="badge ${bmap[b][1]}">${bmap[b][0]}</span>`).join('')}
+        <span class="arr" style="margin-left:2px">▶</span>
+      </div>
+      <div class="snack-body">
+        ${s.ing.map(x => `<div class="sing">${x}</div>`).join('')}
+        ${s.tip ? `<div class="stip">→ ${s.tip}</div>` : ''}
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+// ── INIT ──
+renderMeals();
+renderSnacks();
+</script>
+</body>
+</html>
